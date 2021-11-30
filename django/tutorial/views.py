@@ -57,8 +57,6 @@ class LogView(APIView):
             stub = log_pb2_grpc.LoggerStub(channel)
 
             grpc_request = log_pb2.LogRequest()
-            grpc_request.order = -1
-
             grpc_response = stub.Log(grpc_request)
 
         return Response(data={"history": str(grpc_response.value)}, status=200)
