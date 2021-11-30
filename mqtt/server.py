@@ -17,44 +17,29 @@ import log_pb2
 import log_pb2_grpc
 import threading
 
+history = []
+
 class LoggerServicer(log_pb2_grpc.LoggerServicer):
 
     def __init__(self):
-        self.history = []
+        pass
         
-
     def Log(self, request, context):
-        n = request.order
-        
-        if n >= 0:    
-            self.history.append(n)
-            
         response = log_pb2.LogResponse()
-        for i in self.history:
+        for i in history:
             response.value.append(i)
     
         return response
 
 class MQTT():
     def __init__(self):
-        self.grpc_ip = "localhost"
-        self.grpc_port = 8081
+
         self.mqtt_ip = "localhost"
         self.mqtt_port = 1883
     
     @staticmethod
     def on_message(client, obj, msg):
-        host = f"{'localhost'}:{8081}"
-        
-        with grpc.insecure_channel(host) as channel:
-            stub = log_pb2_grpc.LoggerStub(channel)
-
-            request = log_pb2.LogRequest()
-            request.order = int(msg.payload)
-
-            response = stub.Log(request)
-            print(response.value)
-
+        history.append(int(msg.payload))
         print(f"TOPIC:{msg.topic}, VALUE:{msg.payload}")
 
     def main(self):

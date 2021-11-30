@@ -5,7 +5,6 @@ service Logger {
 }
 
 message LogRequest {
-    int64 order = 1;
 }
 
 message LogResponse {
